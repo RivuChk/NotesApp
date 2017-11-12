@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.subjects.Subject;
 
 /**
  * Created by Rivu on 11-11-2017.
@@ -22,7 +23,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHolder>{
 
+    private final Subject<ViewBooleanWrapper> adapterViewClicks;
     ArrayList<NoteModel> noteList = new ArrayList<>();
+
+    public NotesAdapter(Subject<ViewBooleanWrapper> adapterViewClicks) {
+        this.adapterViewClicks = adapterViewClicks;
+    }
 
     public void setNoteList(@NonNull List<NoteModel> noteList) {
         this.noteList.clear();
@@ -62,19 +68,20 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
             txtNote.setMaxLines(3);
             txtNote.setEllipsize(TextUtils.TruncateAt.END);
 
+            ViewBooleanWrapper wrapper = new ViewBooleanWrapper();
+            wrapper.textView = txtNote;
+            wrapper.isExpanded= false;
+
             RxView.clicks(itemView)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(v->{
-                        if(!isExpanded) {
-                            txtNote.setMaxLines(30);
-                            txtNote.setEllipsize(TextUtils.TruncateAt.END);
-                            isExpanded = true;
-                        } else {
-                            txtNote.setMaxLines(3);
-                            txtNote.setEllipsize(TextUtils.TruncateAt.END);
-                            isExpanded = false;
-                        }
+                        adapterViewClicks.onNext(wrapper);
                     });
         }
+    }
+
+    public class ViewBooleanWrapper {
+        public TextView textView;
+        public boolean isExpanded;
     }
 }

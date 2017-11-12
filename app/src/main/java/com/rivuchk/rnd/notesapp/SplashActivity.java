@@ -20,7 +20,8 @@ public class SplashActivity extends AppCompatActivity {
         Observable.timer(3, TimeUnit.SECONDS)
                 .compose(new Utils.BackgroundLoader<>())
                 .subscribe((time)->{
-                    Intent intent = new Intent(SplashActivity.this,NotesActivity.class);
+                    Intent intent = new Intent(SplashActivity.this,
+                            NotesActivity.class);
                     startActivity(intent);
                     finish();
                 });
